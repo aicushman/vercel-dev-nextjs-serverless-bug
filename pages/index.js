@@ -1,19 +1,22 @@
-import useSWR from 'swr'
-import Person from '../components/Person'
-
-const fetcher = (url) => fetch(url).then((res) => res.json())
+import { useEffect, useState } from "react";
 
 export default function Index() {
-  const { data, error } = useSWR('/api/people', fetcher)
+  const [nodeCall, setNodeCall] = useState();
+  const [pythonCall, setPythonCall] = useState();
 
-  if (error) return <div>Failed to load</div>
-  if (!data) return <div>Loading...</div>
+  useEffect(async () => {
+    setNodeCall(
+      await fetch("/api/test", { method: "GET" }).then((res) => res.status)
+    );
+    setPythonCall(
+      await fetch("/api/date", { method: "GET" }).then((res) => res.status)
+    );
+  }, []);
 
   return (
-    <ul>
-      {data.map((p, i) => (
-        <Person key={i} person={p} />
-      ))}
-    </ul>
-  )
+    <>
+      <div>Node serverless function in /pages/api: {nodeCall}</div>
+      <div>Python serverless function in /api: {pythonCall}</div>
+    </>
+  );
 }
